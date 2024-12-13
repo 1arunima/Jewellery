@@ -2,7 +2,8 @@
 import { createWebHistory ,createRouter } from "vue-router";
 
 import Home from "../components/Home.vue"
-import Cart from "../components/Cart.vue"
+import EditCart from "../components/EditCart.vue";
+// import Cart from "../components/Cart.vue"
 
 
 const router=createRouter({
@@ -13,10 +14,17 @@ const router=createRouter({
             name :"home",
             component:Home
         },
+        // {
+        //     path:'/cart',
+        //     name:"cart",
+        //     component:Cart
+        // }
+
         {
-            path:'/cart',
-            name:"cart",
-            component:Cart
+            path:'/edit/:id',
+            name :'EditCart',
+            component:EditCart,
+            props :true
         }
 
     ]

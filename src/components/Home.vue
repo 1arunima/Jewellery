@@ -1,30 +1,32 @@
 
 
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 import { v4 as uuidv4 } from "uuid";
-import { IconTrash,IconPencil } from "@tabler/icons-vue";
+import { IconTrash, IconPencil } from "@tabler/icons-vue";
+
+const router = useRouter(); // Initialize router
 const store = useCartStore();
-const editedItem=ref({
+const { itemsArray } = storeToRefs(store);
+const editedItem = ref({
   id: "",
   name: "",
   category: "",
   description: "",
   totalPrice: 0,
+});
 
-})
-const { itemsArray } = storeToRefs(store);
 const dialog = ref(false);
 const dialogDelete = ref(false);
 const editedIndex = ref(-1);
+const originalItem =ref({})
 
 const formTitle = computed(() => {
   return editedIndex.value === -1 ? "New Item" : "Edit Item";
 });
-
-
 
 const defaultItem = ref({
   id: "",
@@ -43,64 +45,61 @@ const defaultItem = ref({
     },
   ],
 });
+
 const headers = [
-  
-  { title: "Name", key: "name"},
+  { title: "Name", key: "name" },
   { title: "category", key: "category" },
-  { title: "Description", key: "description"},
+  { title: "Description", key: "description" },
   { title: "TotalPrice", key: "totalPrice" },
-   { title: 'Actions', key: 'actions'}
+  { title: "Actions", key: "actions" },
 ];
 
+onMounted(() => {
+  store.initializeStore();
+});
 
-const editItem=(item)=>{
-  editedIndex.value = itemsArray.value.indexOf(item);
-  editedItem.value = Object.assign({}, item);
-  
-  dialog.value = true;
-}
-
-const deleteItem=(item)=>{
-  editedIndex.value = itemsArray.value.indexOf(item);
-  editedItem.value = Object.assign({}, item);
-  dialogDelete.value = true;
-}
-
-const deleteItemConfirm=()=>{
-  itemsArray.value.splice(editedIndex.value, 1);
-  closeDelete();
-}
-//Close editing dialog box
-const close = () => {
-  dialog.value = false;
-  editedIndex.value=-1;
-  editedItem.value=Object.assign({}, defaultItem.value)
+const editItem = (item) => {
+  // Store the original item before editing (ensure no changes are made initially)
+  originalItem.value = { ...item };
+  editedItem.value = { ...item }; // Make a copy of the item to edit
+  router.push({ name: "EditCart", params: { id: item.id } });
 };
+const deleteItem = (item) => {
+  editedIndex.value = itemsArray.value.findIndex((i) => i.id === item.id);
+  editedItem.value = { ...item };
+  dialogDelete.value = true;
+};
+
+const deleteItemConfirm = () => {
+  store.deleteItem(editedIndex.value);
+  closeDelete();
+};
+
+const close = () => {
+  // When cancel is clicked, reset the editedItem to its original value
+  editedItem.value = { ...originalItem.value };
+  dialog.value = false;
+  editedIndex.value = -1;
+};
+
 
 const closeDelete = () => {
   dialogDelete.value = false;
-  editedIndex.value=-1;
-  editedItem.value=Object.assign({}, defaultItem.value)
+  editedIndex.value = -1;
+  editedItem.value = { ...defaultItem.value };
 };
+
 const save = () => {
-  console.log(editedItem.value);
-  
-  if(editedItem.value)
-{
-  
   if (editedIndex.value > -1) {
-    Object.assign(itemsArray.value[editedIndex.value], editedItem.value);
+    // Only update the item if save is clicked
+    store.editItem(editedIndex.value, editedItem.value);
   } else {
-    editedItem.value.id = uuidv4();
-    itemsArray.value.push(editedItem.value);
-    editedItem.value={}
+    editedItem.value.id = uuidv4(); // Generate new ID for new item
+    store.addItems(editedItem.value);
   }
-}
-  close();
+  close(); // Close dialog after saving
 };
-
 </script>
-
      <template>
  
       <v-data-table :headers="headers" :items="itemsArray" class="headingClass">
