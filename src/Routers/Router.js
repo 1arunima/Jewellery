@@ -14,12 +14,6 @@ const router=createRouter({
             name :"home",
             component:Home
         },
-        // {
-        //     path:'/cart',
-        //     name:"cart",
-        //     component:Cart
-        // }
-
         {
             path:'/edit/:id',
             name :'EditCart',

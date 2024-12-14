@@ -1,80 +1,70 @@
-import { defineStore } from "pinia";
-import { ref, watch } from "vue";
-
-const useCartStore = defineStore("cart", () => {
+import { ref, computed } from 'vue';
+import { defineStore } from 'pinia';
+import { v4 as uuidv4 } from "uuid";
+export const useCartStore = defineStore("cart", () => {
   const itemsArray = ref([]);
+  const defaultItem = ref({
+    id: "",
+    name: "",
+    category: "",
+    description: "",
+    totalPrice: 0,
+    designUrl: "",
+    composition: [
 
-  const initializeStore = () => {
-    const savedItems = localStorage.getItem("itemsArray");
-    if (savedItems) {
-      itemsArray.value = JSON.parse(savedItems);
-    }
+    ],
+  });
+  //actions
+  const save = (editedItem) => {
+    editedItem.id = uuidv4();
+    itemsArray.value.push(editedItem);
+    localStore();
+
   };
+  const localStore = () => {
+    localStorage.setItem("items", JSON.stringify(itemsArray.value))
+  }
 
-  watch(
-    itemsArray,
-    (newValue) => {
-      localStorage.setItem("itemsArray", JSON.stringify(newValue));
-    },
-    { deep: true }
-  );
+  const deleteItemConfirm = (item) => {
+    const itemSearch = itemsArray.value.find((i) => {
+      return i.id === item.id;
+    });
+    let index = itemsArray.value.indexOf(itemSearch);
+    itemsArray.value.splice(index, 1);
+    localStore();
+  }
+  const editedItemSave = ((item) => {
+    const itemSearch = itemsArray.value.find((i) => {
+      return i.id === item.id;
+    });
+    let index = itemsArray.value.indexOf(itemSearch);
+    Object.assign(itemsArray.value[index], item);
+    localStore();
+    console.log(itemsArray.value[index]);
 
-  const addItems = (item) => {
-    itemsArray.value.push(item);
-  };
+  })
 
-  const editItem = (index, updatedItem) => {
-    if (index > -1) {
-      Object.assign(itemsArray.value[index], updatedItem);
-    }
-  };
+  const compositionSave = ((item) => {
+    const itemSearch = itemsArray.value.find((i) => {
+      return i.id === item.id;
+    });
+    let index = itemsArray.value.indexOf(itemSearch);
+    Object.assign(itemsArray.value[index], item);
+    localStore();
 
-  const deleteItem = (index) => {
-    if (index > -1) {
-      itemsArray.value.splice(index, 1);
-    }
-  };
+  })
 
-  const uploadImage = (id, designUrl) => {
-    const index = itemsArray.value.findIndex((item) => item.id === id);
-    if (index > -1) {
-      itemsArray.value[index].designUrl = designUrl;
-    }
-  };
 
-  const addComposition = (itemId, composition) => {
-    const item = itemsArray.value.find((item) => item.id === itemId);
-    if (item) {
-      item.Compositions = item.Compositions || [];
-      item.Compositions.push(composition);
-    }
-  };
+  const deleteCompositionConfirm = ((index, item) => {
+    const itemSearch = itemsArray.value.find((i) => {
+      return i.id === item.id;
+    });
+    let itemIndex = itemsArray.value.indexOf(itemSearch);
+    console.log(itemSearch, itemIndex);
 
-  const editComposition = (itemId, index, updatedComposition) => {
-    const item = itemsArray.value.find((item) => item.id === itemId);
-    if (item && item.Compositions && index > -1) {
-      Object.assign(item.Compositions[index], updatedComposition);
-    }
-  };
+    itemsArray.value[itemIndex].composition.splice(index, 1);
+    localStore();
+  })
 
-  const deleteComposition = (itemId, index) => {
-    const item = itemsArray.value.find((item) => item.id === itemId);
-    if (item && item.Compositions && index > -1) {
-      item.Compositions.splice(index, 1);
-    }
-  };
-
-  return {
-    itemsArray,
-    addItems,
-    editItem,
-    deleteItem,
-    initializeStore,
-    uploadImage,
-    addComposition,
-    editComposition,
-    deleteComposition,
-  };
+  return { itemsArray, save, defaultItem, deleteItemConfirm, deleteCompositionConfirm, editedItemSave, compositionSave };
 });
-
-export { useCartStore };
