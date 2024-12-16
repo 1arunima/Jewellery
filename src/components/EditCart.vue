@@ -1,35 +1,35 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useCartStore } from "../stores/cart";
 import { storeToRefs } from "pinia";
 import { IconUpload, IconPhotoFilled } from "@tabler/icons-vue";
 import Composition from "./Composition.vue";
-import { components } from "vuetify/dist/vuetify-labs.js";
+
 const store = useCartStore();
-const { itemsArray } = storeToRefs(store);
+const { itemsArray,defaultItem } = storeToRefs(store);
 const { editedItemSave } = store;
 const alert = ref(false);
 const props = defineProps({
   id: String,
 });
 
-const editedItem = ref({
-  id: "",
-  name: "",
-  category: "",
-  description: "",
-  totalPrice: 0,
-  designUrl: "",
-  composition: [
-    {
-      material: "",
-      count: 0,
-      weight: 0,
-      price: 0,
-      purity: "",
-    },
-  ],
-});
+// const editedItem = ref({
+//   id: "",
+//   name: "",
+//   category: "",
+//   description: "",
+//   totalPrice: 0,
+//   designUrl: "",
+//   composition: [
+//     {
+//       material: "",
+//       count: 0,
+//       weight: 0,
+//       price: 0,
+//       purity: "",
+//     },
+//   ],
+// });
 
 let retrievedItem;
 onMounted(() => {
@@ -39,39 +39,59 @@ onMounted(() => {
     retrievedItem = itemsArray.value.find((item) => {
       return props.id === item.id;
     });
-    editedItem.value = { ...retrievedItem };
+    defaultItem.value = { ...retrievedItem };
   }
 });
 
 
 
 const cancelEdit = () => {
-  editedItem.value = { ...retrievedItem };
+  defaultItem.value = { ...retrievedItem };
 };
 const uploadImage = () => {
-  editedItemSave(editedItem.value);
-  if(editedItem.value.designUrl!=='')                       
+  editedItemSave();
+  if(defaultItem.value.designUrl!=='')                       
      alert.value = true;
 };
 const handleSave=(()=>{
   alert.value=true;
-  editedItemSave(editedItem.value)
+  editedItemSave(defaultItem.value)
+})
+
+
+
+const FinalPrice = computed(()=>{
+  const totalPrice =Number(defaultItem.value.totalPrice) ||0
+  const compositionPrice=defaultItem.value.composition.reduce((accu,item)=>accu+(Number(item.price)||0),0)
+  return totalPrice+compositionPrice
 })
 </script>
 
 <template>
   <v-container>
     <v-row>
+
+      <v-col cols="12">
+        <v-card
+          class="mx-auto pa-5" :class="$vuetify.display.sm || $vuetify.display.xs  ? 'text-h5 text-center' : 'text-h3'"
+          color="surface-variant"
+          max-width="500"
+        >
+          Total Price : {{FinalPrice}}
+        </v-card>
+      </v-col>
       <v-col cols="4">
+      
+      
         <v-card class="h-100">
           <h1>Image</h1>
           <!-- <IconPhotoFilled/> -->
           <v-img
-            v-if="editedItem.designUrl"
+            v-if="defaultItem.designUrl"
             :width="300"
             aspect-ratio="16/9"
             cover
-            :src="editedItem.designUrl"
+            :src="defaultItem.designUrl"
           ></v-img>
           <v-img
             v-else
@@ -82,7 +102,7 @@ const handleSave=(()=>{
             <IconPhotoFilled class="w-100 h-25" />
           </v-img>
           <v-text-field
-            v-model="editedItem.designUrl"
+            v-model="defaultItem.designUrl"
             label="Enter your image url"
             class="ma-4 outlined"
           >
@@ -104,14 +124,14 @@ const handleSave=(()=>{
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="editedItem.name"
+                    v-model="defaultItem.name"
                     label="Name of item"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-select
                     label="Select Category"
-                    v-model="editedItem.category"
+                    v-model="defaultItem.category"
                     :items="[
                       'EarRing',
                       'Pendant',
@@ -125,14 +145,14 @@ const handleSave=(()=>{
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-textarea
-                      v-model="editedItem.description"
+                      v-model="defaultItem.description"
                       label="Description"
                     ></v-textarea>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
                     type="Number"
-                    v-model="editedItem.totalPrice"
+                    v-model="defaultItem.totalPrice"
                     label="TotalPrice"
                   ></v-text-field>
                 </v-col>

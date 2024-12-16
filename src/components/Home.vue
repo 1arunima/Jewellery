@@ -46,6 +46,7 @@ onMounted(()=>{
   let retrievedData=localStorage.getItem("items");
   if(retrievedData)
      itemsArray.value=JSON.parse(retrievedData)
+    defaultItem.value=editedItem.value
 })
 
 
@@ -57,27 +58,27 @@ router.push(`/edit/${item.id}`)
 const close = () => {
   dialog.value = false;
   editedIndex.value=-1;
-  editedItem.value=Object.assign({}, defaultItem.value)
+  defaultItem.value=Object.assign({}, editedItem.value)
 };
 
 const closeDelete = () => {
   dialogDelete.value = false;
   editedIndex.value=-1;
-  editedItem.value=Object.assign({}, defaultItem.value)
+  defaultItem.value=Object.assign({}, editedItem.value)
 };
 
 const showDeleteDialogBox=(item)=>{
   dialogDelete.value = true;
-  editedItem.value=item;
+  defaultItem.value=item;
 }
 const deleteItem=(()=>{
-  deleteItemConfirm(editedItem.value);
+  deleteItemConfirm();
   dialogDelete.value=false;
 })
 const saveItem=(()=>{
 
-  save(editedItem.value);
-  editedItem.value=Object.assign({}, defaultItem.value)
+  save();
+  defaultItem.value=Object.assign({}, editedItem.value)
   dialog.value=false;
   })
 
@@ -110,7 +111,7 @@ const saveItem=(()=>{
                 <v-row>
                   <v-col cols="12">
                     <v-text-field
-                      v-model="editedItem.name"
+                      v-model="defaultItem.name"
                       label="Name of item"
                      
                       required
@@ -120,7 +121,7 @@ const saveItem=(()=>{
                     
                     <v-select
                       label="Select Category"
-                      v-model="editedItem.category"
+                      v-model="defaultItem.category"
                       :items="[
                         'EarRing',
                         'Pendant',
@@ -135,7 +136,7 @@ const saveItem=(()=>{
                   <v-col cols="12">
 
                     <v-textarea
-                      v-model="editedItem.description"
+                      v-model="defaultItem.description"
                       label="Description"
                     ></v-textarea>
 
@@ -143,7 +144,7 @@ const saveItem=(()=>{
                   <v-col cols="12" >
                     <v-text-field
                     type="Number"
-                      v-model="editedItem.totalPrice"
+                      v-model="defaultItem.totalPrice"
                       label="TotalPrice"
                     ></v-text-field>
                   </v-col>

@@ -3,8 +3,9 @@ import './style.css'
 import { createPinia } from 'pinia'
 import App from './App.vue'
  import router from './Routers/Router'
+ ;
 // import * as TablerIconsVue from '@tabler/icons-vue';
-
+import '@mdi/font/css/materialdesignicons.css'
 //Vuetify
 
 import 'vuetify/styles'

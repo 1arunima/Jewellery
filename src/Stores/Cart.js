@@ -15,9 +15,9 @@ export const useCartStore = defineStore("cart", () => {
     ],
   });
   //actions
-  const save = (editedItem) => {
-    editedItem.id = uuidv4();
-    itemsArray.value.push(editedItem);
+  const save = () => {
+    defaultItem.value.id = uuidv4();
+    itemsArray.value.push(defaultItem.value);
     localStore();
 
   };
@@ -25,39 +25,39 @@ export const useCartStore = defineStore("cart", () => {
     localStorage.setItem("items", JSON.stringify(itemsArray.value))
   }
 
-  const deleteItemConfirm = (item) => {
+  const deleteItemConfirm = () => {
     const itemSearch = itemsArray.value.find((i) => {
-      return i.id === item.id;
+      return i.id === defaultItem.value.id;
     });
     let index = itemsArray.value.indexOf(itemSearch);
     itemsArray.value.splice(index, 1);
     localStore();
   }
-  const editedItemSave = ((item) => {
+  const editedItemSave = (() => {
     const itemSearch = itemsArray.value.find((i) => {
-      return i.id === item.id;
+      return i.id === defaultItem.value.id;
     });
     let index = itemsArray.value.indexOf(itemSearch);
-    Object.assign(itemsArray.value[index], item);
+    Object.assign(itemsArray.value[index], defaultItem.value);
     localStore();
     console.log(itemsArray.value[index]);
 
   })
 
-  const compositionSave = ((item) => {
+  const compositionSave = (() => {
     const itemSearch = itemsArray.value.find((i) => {
-      return i.id === item.id;
+      return i.id === defaultItem.value.id;
     });
     let index = itemsArray.value.indexOf(itemSearch);
-    Object.assign(itemsArray.value[index], item);
+    Object.assign(itemsArray.value[index], defaultItem.value);
     localStore();
 
   })
 
 
-  const deleteCompositionConfirm = ((index, item) => {
+  const deleteCompositionConfirm = ((index) => {
     const itemSearch = itemsArray.value.find((i) => {
-      return i.id === item.id;
+      return i.id === defaultItem.value.id;
     });
     let itemIndex = itemsArray.value.indexOf(itemSearch);
     console.log(itemSearch, itemIndex);
