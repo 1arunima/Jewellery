@@ -1,48 +1,17 @@
 <script setup>
-import { ref, computed, onMounted,watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useCartStore } from "../stores/cart";
 import { storeToRefs } from "pinia";
 import { IconTrash, IconPencil } from "@tabler/icons-vue";
 const store = useCartStore();
-const { itemsArray,defaultItem} = storeToRefs(store);
+const { itemsArray, defaultItem } = storeToRefs(store);
 const { compositionSave, deleteCompositionConfirm } = store;
 const props = defineProps({
   id: {
     type: String,
   },
 });
-// const retrieveItemFromLocalStorage = () => {
-//   retrievedItem = itemsArray.value.find((item) => {
-//     return props.id === item.id;
-//   });
-//   editedItem.value = { ...retrievedItem };
-// };
-// let retrievedItem;
-// onMounted(() => {
-//   let retrievedData = localStorage.getItem("items");
-//   if (retrievedData) itemsArray.value = JSON.parse(retrievedData);
-//   if (props.id) {
-//     retrieveItemFromLocalStorage();
-//   }
-// });
 
-// const editedItem = ref({
-//   id: "",
-//   name: "",
-//   category: "",
-//   description: "",
-//   totalPrice: 0,
-//   designUrl: "",
-//   composition: [
-//     {
-//       material: "",
-//       count: 0,
-//       weight: 0,
-//       price: 0,
-//       purity: "",
-//     },
-//   ],
-// });
 const composition = ref({
   material: "",
   count: 0,
@@ -50,10 +19,6 @@ const composition = ref({
   price: 0,
   purity: "",
 });
-
-
-
-
 
 const headers = [
   { title: "Material,", key: "material" },
@@ -63,9 +28,6 @@ const headers = [
   { title: "Purity", key: "purity" },
   { title: "Actions", key: "actions" },
 ];
-
-
-
 
 const dialog = ref(false);
 const dialogDelete = ref(false);
@@ -83,11 +45,9 @@ const closeComposition = () => {
     price: 0,
     purity: "",
   };
-
 };
 const closeDeleteCompositionDialog = () => {
   dialogDelete.value = false;
-  editedIndex.value = -1;
 };
 
 const showCompositionDialogForDelete = (item) => {
@@ -111,20 +71,19 @@ const save = () => {
     purity: "",
   };
   editedIndex.value = -1;
- 
 };
 
 const deleteCompositionItem = () => {
   deleteCompositionConfirm(editedIndex.value);
   editedIndex.value = -1;
   dialogDelete.value = false;
-  // composition.value = {
-  //   material: "",
-  //   count: 0,
-  //   weight: 0,
-  //   price: 0,
-  //   purity: "",
-  // };
+  composition.value = {
+    material: "",
+    count: 0,
+    weight: 0,
+    price: 0,
+    purity: "",
+  };
 };
 const editComposition = (item) => {
   composition.value = { ...item };
@@ -140,9 +99,7 @@ const editComposition = (item) => {
         <v-toolbar-title class="ma-3">COMPOSITION</v-toolbar-title>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn class="mb-2" color="primary" dark v-bind="props">
-              New Item
-            </v-btn>
+            <v-btn class="mb-2" color="primary" dark v-bind="props"> New Item </v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -189,16 +146,10 @@ const editComposition = (item) => {
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="closeComposition"
-              >
+              <v-btn color="blue-darken-1" variant="text" @click="closeComposition">
                 Cancel
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">
-                Save
-              </v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="save"> Save </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -217,10 +168,7 @@ const editComposition = (item) => {
                 @click="closeDeleteCompositionDialog"
                 >Cancel</v-btn
               >
-              <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="deleteCompositionItem"
+              <v-btn color="blue-darken-1" variant="text" @click="deleteCompositionItem"
                 >OK</v-btn
               >
               <v-spacer></v-spacer>

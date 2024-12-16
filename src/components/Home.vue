@@ -21,13 +21,6 @@ const editedItem = ref({
   totalPrice: 0,
   designUrl: "",
         composition: [
-          // {
-          //   material: "",
-          //   count: 0,
-          //   weight: 0,
-          //   price: 0,
-          //   purity: "",
-          // },
         ],
 });
 const headers = [

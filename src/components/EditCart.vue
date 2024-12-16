@@ -13,23 +13,6 @@ const props = defineProps({
   id: String,
 });
 
-// const editedItem = ref({
-//   id: "",
-//   name: "",
-//   category: "",
-//   description: "",
-//   totalPrice: 0,
-//   designUrl: "",
-//   composition: [
-//     {
-//       material: "",
-//       count: 0,
-//       weight: 0,
-//       price: 0,
-//       purity: "",
-//     },
-//   ],
-// });
 
 let retrievedItem;
 onMounted(() => {
@@ -46,8 +29,8 @@ onMounted(() => {
 
 
 const cancelEdit = () => {
-  defaultItem.value = { ...retrievedItem };
-};
+  defaultItem.value= { ...retrievedItem };
+}; 
 const uploadImage = () => {
   editedItemSave();
   if(defaultItem.value.designUrl!=='')                       
@@ -55,7 +38,7 @@ const uploadImage = () => {
 };
 const handleSave=(()=>{
   alert.value=true;
-  editedItemSave(defaultItem.value)
+  editedItemSave()
 })
 
 
